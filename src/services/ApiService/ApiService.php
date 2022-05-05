@@ -25,7 +25,7 @@ class ApiService implements IApiService
         $root = "https://jsonplaceholder.typicode.com/";
         $call = $this->client->request(
             "GET",
-            $root . $type . "1" . $content
+            $root . $type . "/1/" . $content
         );
 
         try {

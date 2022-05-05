@@ -15,6 +15,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Validator\Constraints\Json;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
 class ApiController extends AbstractController
@@ -22,7 +23,6 @@ class ApiController extends AbstractController
     private ApiService $apiService;
     private UserRepository $userRepository;
     private AlbumRepository $albumRepository;
-    private ?User $currentUser;
     private TodoRepository $todoRepository;
     private PostRepository $postRepository;
 
@@ -35,15 +35,6 @@ class ApiController extends AbstractController
         $this->albumRepository = $albumRepository;
         $this->todoRepository = $todoRepository;
         $this->postRepository = $postRepository;
-        $this->currentUser = $this->userRepository->findOneBy(['email' => $this->getUser()->getUserIdentifier()]);
-    }
-
-    #[Route('/api', name: 'app_api')]
-    public function index(): Response
-    {
-        return $this->render('api/index.html.twig', [
-            'controller_name' => 'ApiController',
-        ]);
     }
 
     /**
@@ -53,22 +44,35 @@ class ApiController extends AbstractController
     public function getUserAlbums(): \Exception|Response
     {
         $datas = $this->apiService->getApiData('users', 'albums');
+        $add = 0;
+        $update = 0;
+
         foreach ($datas as $data)
         {
-            $album = new Album();
-            $album->setUserId($this->currentUser);
-            $album->setTitle($data['title']);
-            try {
-                $this->albumRepository->add($album);
-            } catch (\Exception $exception) {
-                return $exception;
+            $check = $this->albumRepository->findOneBy(['title' => $data['title']]);
+            if (empty($check)){
+                $album = new Album();
+                $album->setUserId($this->userRepository->findOneBy(['id' => $data['userId']]));
+                $album->setTitle($data['title']);
+                try {
+                    $this->albumRepository->add($album, true);
+                    $add++;
+                } catch (\Exception $exception) {
+                    return $exception;
+                }
+            } else {
+                $check->setUserId($this->userRepository->findOneBy(['id' => $data['userId']]));
+                $check->setTitle($data['title']);
+                try {
+                    $this->albumRepository->add($check);
+                    $update++;
+                } catch (\Exception $exception) {
+                    return new JsonResponse($exception, Response::HTTP_INTERNAL_SERVER_ERROR);
+                }
             }
         }
 
-        return $this->render('api/index.html.twig', [
-            'controller_name' => 'ApiController',
-            'data' =>  $this->albumRepository->findAll()
-        ]);
+        return new JsonResponse('Ok: ' . $add . ' added -- ' . $update . ' updated' , Response::HTTP_OK);
     }
 
     /**
@@ -82,7 +86,7 @@ class ApiController extends AbstractController
         {
             $todo = new Todo();
             $todo->setTitle($data['title']);
-            $todo->setUserId($this->currentUser);
+            $todo->setUserId($this->userRepository->findOneBy(['id' => $data['userId']]));
             $todo->setCompleted($data['completed']);
 
             try {
@@ -109,7 +113,7 @@ class ApiController extends AbstractController
         {
             $post = new Post();
             $post->setTitle($data['title']);
-            $post->setUserId($this->currentUser);
+            $post->setUserId($this->userRepository->findOneBy(['id' => $data['userId']]));
             $post->setBody($data['body']);
 
             try {
