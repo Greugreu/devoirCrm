@@ -22,6 +22,9 @@ class Comment
     #[ORM\Column(type: 'string', length: 255)]
     private $body;
 
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'comments')]
+    private $UserId;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -59,6 +62,18 @@ class Comment
     public function setBody(string $body): self
     {
         $this->body = $body;
+
+        return $this;
+    }
+
+    public function getUserId(): ?User
+    {
+        return $this->UserId;
+    }
+
+    public function setUserId(?User $UserId): self
+    {
+        $this->UserId = $UserId;
 
         return $this;
     }

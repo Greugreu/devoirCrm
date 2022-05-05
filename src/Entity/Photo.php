@@ -22,6 +22,9 @@ class Photo
     #[ORM\Column(type: 'string', length: 255)]
     private $thumbnailUrl;
 
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'photos')]
+    private $UserId;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -59,6 +62,18 @@ class Photo
     public function setThumbnailUrl(string $thumbnailUrl): self
     {
         $this->thumbnailUrl = $thumbnailUrl;
+
+        return $this;
+    }
+
+    public function getUserId(): ?User
+    {
+        return $this->UserId;
+    }
+
+    public function setUserId(?User $UserId): self
+    {
+        $this->UserId = $UserId;
 
         return $this;
     }

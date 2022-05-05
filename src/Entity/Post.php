@@ -19,6 +19,9 @@ class Post
     #[ORM\Column(type: 'string', length: 255)]
     private $body;
 
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'posts')]
+    private $UserId;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -44,6 +47,18 @@ class Post
     public function setBody(string $body): self
     {
         $this->body = $body;
+
+        return $this;
+    }
+
+    public function getUserId(): ?User
+    {
+        return $this->UserId;
+    }
+
+    public function setUserId(?User $UserId): self
+    {
+        $this->UserId = $UserId;
 
         return $this;
     }

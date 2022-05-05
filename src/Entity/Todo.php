@@ -19,6 +19,9 @@ class Todo
     #[ORM\Column(type: 'boolean')]
     private $completed;
 
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'todos')]
+    private $UserId;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -44,6 +47,18 @@ class Todo
     public function setCompleted(bool $completed): self
     {
         $this->completed = $completed;
+
+        return $this;
+    }
+
+    public function getUserId(): ?User
+    {
+        return $this->UserId;
+    }
+
+    public function setUserId(?User $UserId): self
+    {
+        $this->UserId = $UserId;
 
         return $this;
     }
