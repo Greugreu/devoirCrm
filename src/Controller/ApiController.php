@@ -82,24 +82,39 @@ class ApiController extends AbstractController
     public function getUserTodos()
     {
         $datas = $this->apiService->getApiData('users', 'todos');
+        $add = 0;
+        $update = 0;
+
         foreach ($datas as $data)
         {
-            $todo = new Todo();
-            $todo->setTitle($data['title']);
-            $todo->setUserId($this->userRepository->findOneBy(['id' => $data['userId']]));
-            $todo->setCompleted($data['completed']);
+            $check = $this->todoRepository->findOneBy(['title' => $data['title']]);
+            if (empty($check)){
+                $todo = new Todo();
+                $todo->setTitle($data['title']);
+                $todo->setUserId($this->userRepository->findOneBy(['id' => $data['userId']]));
+                $todo->setCompleted($data['completed']);
 
-            try {
-                $this->todoRepository->add($todo);
-            } catch (\Exception $exception) {
-                return $exception;
+                try {
+                    $this->todoRepository->add($todo);
+                    $add++;
+                } catch (\Exception $exception) {
+                    return $exception;
+                }
+            } else {
+                $check->setTitle($data['title']);
+                $check->setUserId($this->userRepository->findOneBy(['id' => $data['userId']]));
+                $check->setCompleted($data['completed']);
+
+                try {
+                    $this->todoRepository->add($check);
+                    $update++;
+                } catch (\Exception $exception) {
+                    return $exception;
+                }
             }
         }
 
-        return $this->render('api/index.html.twig', [
-            'controller_name' => 'ApiController',
-            'data' =>  $this->todoRepository->findAll()
-        ]);
+        return new JsonResponse('Ok: ' . $add . ' added -- ' . $update . ' updated' , Response::HTTP_OK);
     }
 
     /**
@@ -109,6 +124,9 @@ class ApiController extends AbstractController
     public function getUserPosts()
     {
         $datas = $this->apiService->getApiData('users', 'posts');
+        $add = 0;
+        $update = 0;
+
         foreach ($datas as $data)
         {
             $post = new Post();
@@ -123,10 +141,7 @@ class ApiController extends AbstractController
             }
         }
 
-        return $this->render('api/index.html.twig', [
-            'controller_name' => 'ApiController',
-            'data' =>  $this->postRepository->findAll()
-        ]);
+        return new JsonResponse('Ok: ' . $add . ' added -- ' . $update . ' updated' , Response::HTTP_OK);
     }
 
 
