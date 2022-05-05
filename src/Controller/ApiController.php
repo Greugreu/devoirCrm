@@ -129,15 +129,30 @@ class ApiController extends AbstractController
 
         foreach ($datas as $data)
         {
-            $post = new Post();
-            $post->setTitle($data['title']);
-            $post->setUserId($this->userRepository->findOneBy(['id' => $data['userId']]));
-            $post->setBody($data['body']);
+            $check = $this->postRepository->findOneBy(['title' => $data['title']]);
+            if (empty($check)){
+                $post = new Post();
+                $post->setUserId($this->userRepository->findOneBy(['id' => $data['userId']]));
+                $post->setTitle($data['title']);
+                $post->setBody($data['body']);
 
-            try {
-                $this->postRepository->add($post);
-            } catch (\Exception $exception) {
-                return $exception;
+                try {
+                    $this->postRepository->add($post);
+                    $add++;
+                } catch (\Exception $exception) {
+                    return $exception;
+                }
+            } else {
+                $check->setUserId($this->userRepository->findOneBy(['id' => $data['userId']]));
+                $check->setTitle($data['title']);
+                $check->setBody($data['body']);
+
+                try {
+                    $this->postRepository->add($check);
+                    $update++;
+                } catch (\Exception $exception){
+                    return $exception;
+                }
             }
         }
 
