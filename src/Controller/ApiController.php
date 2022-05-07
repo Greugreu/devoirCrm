@@ -3,10 +3,12 @@
 namespace App\Controller;
 
 use App\Entity\Album;
+use App\Entity\Photo;
 use App\Entity\Post;
 use App\Entity\Todo;
 use App\Entity\User;
 use App\Repository\AlbumRepository;
+use App\Repository\PhotoRepository;
 use App\Repository\PostRepository;
 use App\Repository\TodoRepository;
 use App\Repository\UserRepository;
@@ -24,16 +26,18 @@ class ApiController extends AbstractController
     private AlbumRepository $albumRepository;
     private TodoRepository $todoRepository;
     private PostRepository $postRepository;
+    private PhotoRepository $photoRepository;
 
     public function __construct(ApiService $apiService, UserRepository $userRepository,
                                 AlbumRepository $albumRepository, TodoRepository $todoRepository,
-                                PostRepository $postRepository)
+                                PostRepository $postRepository, PhotoRepository $photoRepository)
     {
         $this->apiService = $apiService;
         $this->userRepository = $userRepository;
         $this->albumRepository = $albumRepository;
         $this->todoRepository = $todoRepository;
         $this->postRepository = $postRepository;
+        $this->photoRepository = $photoRepository;
     }
 
     /**
@@ -157,6 +161,49 @@ class ApiController extends AbstractController
 
         return new JsonResponse('Ok: ' . $add . ' added -- ' . $update . ' updated' , Response::HTTP_OK);
     }
+
+    /**
+     * @throws TransportExceptionInterface
+     */
+    #[Route('/api/getAlbumPhotos', name:'getAlbumPhotos')]
+    public function getAlbumPhotos()
+    {
+        $datas = $this->apiService->getApiData('posts', 'comments');
+        $add = 0;
+        $update = 0;
+
+        foreach ($datas as $data) {
+            $check = $this->photoRepository->findOneBy(['title' => $data['title']]);
+            if (empty($check)) {
+                $photo = new Photo();
+                $photo->setTitle($data['title']);
+                $photo->setAlbumId($this->albumRepository->findOneBy(['id' => $data['albumId']]));
+                $photo->setUrl($data['url']);
+                $photo->setThumbnailUrl('thumbnailUrl');
+
+                try {
+                    $this->photoRepository->add($photo);
+                    $add++;
+                } catch (\Exception $exception) {
+                    return $exception;
+                }
+            } else {
+                $check->setAlbumId($this->albumRepository->findOneBy(['id' => $data['albumId']]));
+                $check->setTitle($data['title']);
+                $check->setUrl($data['url']);
+                $check->setThumbnailUrl('thumbnailUrl');
+
+                try {
+                    $this->photoRepository->add($check);
+                    $update++;
+                } catch (\Exception $exception) {
+                    return $exception;
+                }
+            }
+        }
+        return new JsonResponse('Ok: ' . $add . ' added -- ' . $update . ' updated' , Response::HTTP_OK);
+    }
+
 
 
 
