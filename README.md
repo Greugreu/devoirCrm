@@ -1,12 +1,10 @@
 # Devoir CRM
 
-Symfony 6 avec PHP 8.0
-
 ## Stack
 
 **Front-end** : Twig
 
-**Back-End** : Symfony 6.0
+**Back-End** : Symfony 6.0 && PHP 8.0
 
 ## Install
 
