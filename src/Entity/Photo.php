@@ -25,6 +25,9 @@ class Photo
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'photos')]
     private $UserId;
 
+    #[ORM\ManyToOne(targetEntity: album::class, inversedBy: 'photos')]
+    private $albumId;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -74,6 +77,18 @@ class Photo
     public function setUserId(?User $UserId): self
     {
         $this->UserId = $UserId;
+
+        return $this;
+    }
+
+    public function getAlbumId(): ?album
+    {
+        return $this->albumId;
+    }
+
+    public function setAlbumId(?album $albumId): self
+    {
+        $this->albumId = $albumId;
 
         return $this;
     }
