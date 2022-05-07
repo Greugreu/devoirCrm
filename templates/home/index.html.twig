@@ -1,0 +1,82 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+
+<div class="example-wrapper">
+    <table class="table-striped">
+        <thead>
+            <th scope="col">Id</th>
+            <th scope="col">email</th>
+            <th scope="col">roles</th>
+        </thead>
+        <tbody>
+        {% for data in datas %}
+            <tr>
+                <th scope="row">{{ data.id }}</th>
+                <td>{{ data.email }}</td>
+                <td>{{ data.roles[0] }}</td>
+                <td><button onclick="getAlbums({{ data.id }})">Get Albums</button></td>
+                <td><button onclick="getTodos({{ data.id }})">Get Todos</button></td>
+                <td><button onclick="getPosts({{ data.id }})">Get Posts</button></td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}
+{% block javascripts %}
+    <script>
+        function getAlbums(id){
+            let httpRequest = new XMLHttpRequest();
+
+              if (!httpRequest) {
+                  alert('Abandon :( Impossible de créer une instance de XMLHTTP');
+                  return false;
+              }
+              httpRequest.onreadystatechange = alertContents;
+              httpRequest.open('GET', '/api/getUserAlbums/'+id);
+              httpRequest.send();
+            function alertContents() {
+                if (httpRequest.readyState === XMLHttpRequest.DONE) {
+                    alert(httpRequest.responseText);
+                }
+            }
+
+        }
+        function getTodos(id){
+            let httpRequest = new XMLHttpRequest();
+
+              if (!httpRequest) {
+                  alert('Abandon :( Impossible de créer une instance de XMLHTTP');
+                  return false;
+              }
+              httpRequest.onreadystatechange = alertContents;
+              httpRequest.open('GET', '/api/getUserTodos/'+id);
+              httpRequest.send();
+            function alertContents() {
+                if (httpRequest.readyState === XMLHttpRequest.DONE) {
+                    alert(httpRequest.responseText);
+                }
+            }
+
+        }
+        function getPosts(id){
+            let httpRequest = new XMLHttpRequest();
+
+              if (!httpRequest) {
+                  alert('Abandon :( Impossible de créer une instance de XMLHTTP');
+                  return false;
+              }
+              httpRequest.onreadystatechange = alertContents;
+              httpRequest.open('GET', '/api/getUserPosts/'+id);
+              httpRequest.send();
+            function alertContents() {
+                if (httpRequest.readyState === XMLHttpRequest.DONE) {
+                    alert(httpRequest.responseText);
+                }
+            }
+
+        }
+    </script>
+{% endblock %}

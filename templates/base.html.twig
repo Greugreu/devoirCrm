@@ -11,9 +11,32 @@
 
         {% block javascripts %}
             {{ encore_entry_script_tags('app') }}
+            <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
         {% endblock %}
     </head>
     <body>
-        {% block body %}{% endblock %}
+    <div class="wrapper">
+        <div class="sidebar">
+            <div class="title">Devoir Crm</div>
+            <ul class="nav">
+                <li>
+                    <a href="/home">Users</a>
+                </li>
+                <li>
+                    <a href="/Albums">Albums</a>
+                </li>
+                <li>
+                    <a href="/Todos">Todos</a>
+                </li>
+            </ul>
+        </div>
+        <div class="content content-is-open">
+            <div class="well well-sm">
+                {% block body %}{% endblock %}
+            </div>
+            <hr>
+        </div>
+    </div>
+
     </body>
 </html>
