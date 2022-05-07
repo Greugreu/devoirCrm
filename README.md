@@ -10,9 +10,11 @@ Symfony 6 avec PHP 8.0
 
 ## Install
 
-[Symfony](https://symfony.com/download)
+[Symfony website](https://symfony.com/download)
 
 ```bash
+  !! adapt .env file to your database configuration
+  
   #Install components
   $ composer install
     
