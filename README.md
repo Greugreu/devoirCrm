@@ -16,6 +16,8 @@ Symfony 6 avec PHP 8.0
   $ composer install
   $ npm run dev
   $ symfony server:start
+  
+  http://127.0.0.1:8000/home
 ```
 
 ## Auteur
