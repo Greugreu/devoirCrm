@@ -22,7 +22,10 @@
   #Load migrations
   $ php bin/console make:migrations
   $ php bin/console doctrine:migrations:migrate
-    
+  
+  #load user fixtures
+  $ php bin/console database:fixtures:load
+  
   #build front end webpack
   $ npm run dev
   
