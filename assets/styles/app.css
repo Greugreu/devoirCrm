@@ -38,8 +38,6 @@ body {
     font-size: 42px;
 }
 
-/* Demo Navigation */
-
 .title {
     font-size: 16px;
     line-height: 50px;
@@ -85,8 +83,6 @@ body {
     background: #444;
 }
 
-/* Demo Description */
-
 h1 {
     margin: 25px 0 15px;
     font-size: 28px;
@@ -97,4 +93,8 @@ h2 {
     font-size: 18px;
     font-weight: 400;
     color: #999;
+}
+
+.userButton{
+    margin-bottom: 1em;
 }

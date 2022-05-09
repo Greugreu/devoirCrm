@@ -42,6 +42,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: 'UserId', targetEntity: Todo::class)]
     private $todos;
 
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private $name;
+
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private $phone;
+
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private $website;
+
     public function __construct()
     {
         $this->albums = new ArrayCollection();
@@ -267,6 +276,42 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
                 $todo->setUserId(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getName(): ?string
+    {
+        return $this->name;
+    }
+
+    public function setName(string $name): self
+    {
+        $this->name = $name;
+
+        return $this;
+    }
+
+    public function getPhone(): ?string
+    {
+        return $this->phone;
+    }
+
+    public function setPhone(string $phone): self
+    {
+        $this->phone = $phone;
+
+        return $this;
+    }
+
+    public function getWebsite(): ?string
+    {
+        return $this->website;
+    }
+
+    public function setWebsite(string $website): self
+    {
+        $this->website = $website;
 
         return $this;
     }

@@ -3,6 +3,7 @@
 {% block body %}
 
 <div class="example-wrapper">
+    <button class="userButton" onclick="getDataAsync('/api/getUsers')">Get Users From API</button>
     <table class="table-striped">
         <thead>
             <th scope="col">Id</th>
@@ -15,9 +16,10 @@
                 <th scope="row">{{ data.id }}</th>
                 <td>{{ data.email }}</td>
                 <td>{{ data.roles[0] }}</td>
-                <td><button onclick="getAlbums({{ data.id }})">Get Albums</button></td>
-                <td><button onclick="getTodos({{ data.id }})">Get Todos</button></td>
-                <td><button onclick="getPosts({{ data.id }})">Get Posts</button></td>
+                <td><button onclick="getDataAsync('/api/getUserAlbums/{{ data.id }}')">Get Albums</button></td>
+                <td><button onclick="getDataAsync('/api/getUserTodos/{{ data.id }}')">Get Todos</button></td>
+                <td><button onclick="getDataAsync('/api/getUserPosts/{{ data.id }}')">Get Posts</button></td>
+                <td><button onclick="getDataAsync('/api/getUserComments/{{ data.id }}')">Get Comments</button></td>
             </tr>
         {% endfor %}
         </tbody>
@@ -27,56 +29,21 @@
 {% endblock %}
 {% block javascripts %}
     <script>
-        function getAlbums(id){
+        function getDataAsync(url) {
             let httpRequest = new XMLHttpRequest();
 
-              if (!httpRequest) {
-                  alert('Abandon :( Impossible de créer une instance de XMLHTTP');
-                  return false;
-              }
-              httpRequest.onreadystatechange = alertContents;
-              httpRequest.open('GET', '/api/getUserAlbums/'+id);
-              httpRequest.send();
+            if (!httpRequest) {
+                alert('Abandon :( Error with XMLHTTP instance');
+                return false;
+            }
+            httpRequest.onreadystatechange = alertContents;
+            httpRequest.open('GET', url);
+            httpRequest.send();
             function alertContents() {
                 if (httpRequest.readyState === XMLHttpRequest.DONE) {
                     alert(httpRequest.responseText);
                 }
             }
-
-        }
-        function getTodos(id){
-            let httpRequest = new XMLHttpRequest();
-
-              if (!httpRequest) {
-                  alert('Abandon :( Impossible de créer une instance de XMLHTTP');
-                  return false;
-              }
-              httpRequest.onreadystatechange = alertContents;
-              httpRequest.open('GET', '/api/getUserTodos/'+id);
-              httpRequest.send();
-            function alertContents() {
-                if (httpRequest.readyState === XMLHttpRequest.DONE) {
-                    alert(httpRequest.responseText);
-                }
-            }
-
-        }
-        function getPosts(id){
-            let httpRequest = new XMLHttpRequest();
-
-              if (!httpRequest) {
-                  alert('Abandon :( Impossible de créer une instance de XMLHTTP');
-                  return false;
-              }
-              httpRequest.onreadystatechange = alertContents;
-              httpRequest.open('GET', '/api/getUserPosts/'+id);
-              httpRequest.send();
-            function alertContents() {
-                if (httpRequest.readyState === XMLHttpRequest.DONE) {
-                    alert(httpRequest.responseText);
-                }
-            }
-
         }
     </script>
 {% endblock %}

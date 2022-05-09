@@ -18,6 +18,7 @@ use App\services\ApiService\ApiService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Validator\Constraints\Json;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
@@ -31,11 +32,12 @@ class ApiController extends AbstractController
     private PostRepository $postRepository;
     private PhotoRepository $photoRepository;
     private CommentRepository $commentRepository;
+    private UserPasswordHasherInterface $passwordHasher;
 
     public function __construct(ApiService $apiService, UserRepository $userRepository,
                                 AlbumRepository $albumRepository, TodoRepository $todoRepository,
                                 PostRepository $postRepository, PhotoRepository $photoRepository,
-                                CommentRepository $commentRepository)
+                                CommentRepository $commentRepository, UserPasswordHasherInterface $passwordHasher)
     {
         $this->apiService = $apiService;
         $this->userRepository = $userRepository;
@@ -44,6 +46,56 @@ class ApiController extends AbstractController
         $this->postRepository = $postRepository;
         $this->photoRepository = $photoRepository;
         $this->commentRepository = $commentRepository;
+        $this->passwordHasher = $passwordHasher;
+    }
+
+    #[Route('/api/getUsers', name:'getApiUsers', methods:'GET')]
+    public function getApiUsers()
+    {
+        $datas = $this->apiService->getApiData('users','');
+        $add = 0;
+        $update = 0;
+
+        if (!empty($datas))
+        {
+            foreach ($datas as $data)
+            {
+                $check = $this->userRepository->findOneBy(['id' => $data['id']]);
+                if (empty($check))
+                {
+                    $user = new User();
+                    $user->setName($data['name']);
+                    $user->setEmail($data['email']);
+                    $user->setPhone($data['phone']);
+                    $user->setWebsite($data['website']);
+                    $user->setRoles(['USER']);
+                    $user->setPassword($this->passwordHasher->hashPassword($user, 'password'));
+
+                    try {
+                        $this->userRepository->add($user);
+                        $add++;
+                    } catch (\Exception $exception) {
+                        return new JsonResponse($exception, Response::HTTP_INTERNAL_SERVER_ERROR);
+                    }
+                } else {
+                    $check->setName($data['name']);
+                    $check->setEmail($data['email']);
+                    $check->setPhone($data['phone']);
+                    $check->setWebsite($data['website']);
+                    $check->setRoles(['USER']);
+
+                    try {
+                        $this->userRepository->add($check);
+                        $update++;
+                    } catch (\Exception $exception) {
+                        return new JsonResponse($exception, Response::HTTP_INTERNAL_SERVER_ERROR);
+                    }
+                }
+            }
+            return new JsonResponse('Ok: ' . $add . ' added -- ' . $update . ' updated' , Response::HTTP_OK);
+        }
+
+        return new JsonResponse('Bad Request' , Response::HTTP_BAD_REQUEST);
     }
 
     /**
@@ -69,7 +121,7 @@ class ApiController extends AbstractController
                         $this->albumRepository->add($album, true);
                         $add++;
                     } catch (\Exception $exception) {
-                        return $exception;
+                        return new JsonResponse($exception, Response::HTTP_INTERNAL_SERVER_ERROR);
                     }
                 } else {
                     $check->setUserId($this->userRepository->findOneBy(['id' => $data['userId']]));
@@ -114,7 +166,7 @@ class ApiController extends AbstractController
                         $this->todoRepository->add($todo);
                         $add++;
                     } catch (\Exception $exception) {
-                        return $exception;
+                        return new JsonResponse($exception, Response::HTTP_INTERNAL_SERVER_ERROR);
                     }
                 } else {
                     $check->setTitle($data['title']);
@@ -162,7 +214,7 @@ class ApiController extends AbstractController
                         $this->postRepository->add($post);
                         $add++;
                     } catch (\Exception $exception) {
-                        return $exception;
+                        return new JsonResponse($exception, Response::HTTP_INTERNAL_SERVER_ERROR);
                     }
                 } else {
                     $check->setUserId($this->userRepository->findOneBy(['id' => $data['userId']]));
@@ -208,7 +260,7 @@ class ApiController extends AbstractController
                         $this->photoRepository->add($photo);
                         $add++;
                     } catch (\Exception $exception) {
-                        return $exception;
+                        return new JsonResponse($exception, Response::HTTP_INTERNAL_SERVER_ERROR);
                     }
                 } else {
                     $check->setAlbumId($this->albumRepository->findOneBy(['id' => $data['albumId']]));
@@ -254,7 +306,7 @@ class ApiController extends AbstractController
                         $this->commentRepository->add($comment);
                         $add++;
                     } catch (\Exception $exception) {
-                        return $exception;
+                        return new JsonResponse($exception, Response::HTTP_INTERNAL_SERVER_ERROR);
                     }
                 } else {
                     $check->setPostId($this->postRepository->findOneBy(['id' => $data['postId']]));
