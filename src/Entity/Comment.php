@@ -22,10 +22,7 @@ class Comment
     #[ORM\Column(type: 'string', length: 255)]
     private $body;
 
-    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'comments')]
-    private $UserId;
-
-    #[ORM\ManyToOne(targetEntity: post::class, inversedBy: 'comments')]
+    #[ORM\ManyToOne(targetEntity: Post::class, inversedBy: 'comments')]
     private $postId;
 
     public function getId(): ?int

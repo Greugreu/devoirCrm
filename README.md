@@ -17,15 +17,12 @@
   $ composer install
     
   #create database
-  $ php bin/console database:create
+  $ php bin/console doctrine:database:create
   
   #Load migrations
   $ php bin/console make:migrations
   $ php bin/console doctrine:migrations:migrate
-  
-  #load user fixtures
-  $ php bin/console database:fixtures:load
-  
+    
   #build front end webpack
   $ npm run dev
   
