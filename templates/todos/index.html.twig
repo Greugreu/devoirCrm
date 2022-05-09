@@ -1,0 +1,26 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+
+    <div class="example-wrapper">
+        <table class="table-striped">
+            <thead>
+            <th scope="col">Title</th>
+            <th scope="col">Completed</th>
+            </thead>
+            <tbody>
+            {% for data in datas %}
+                <tr>
+                    <th scope="row">{{ data.title }}</th>
+                    {% if data.completed == true %}
+                    <td>Completed</td>
+                    {% else %}
+                    <td>Not completed</td>
+                    {% endif %}
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+{% endblock %}
