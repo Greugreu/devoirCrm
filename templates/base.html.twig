@@ -14,6 +14,34 @@
         {% endblock %}
     </head>
     <body>
-        {% block body %}{% endblock %}
+    <div class="wrapper">
+        <div class="sidebar">
+            <div class="title">Devoir Crm</div>
+            <ul class="nav">
+                <li>
+                    <a href="/home">Users</a>
+                </li>
+                <li>
+                    <a href="/album">Albums</a>
+                </li>
+                <li>
+                    <a href="/todos">Todos</a>
+                </li>
+                <li>
+                    <a href="/posts">Posts</a>
+                </li>
+                <li>
+                    <a href="/comments">Comments</a>
+                </li>
+            </ul>
+        </div>
+        <div class="content content-is-open">
+            <div class="well well-sm">
+                {% block body %}{% endblock %}
+            </div>
+            <hr>
+        </div>
+    </div>
+
     </body>
 </html>

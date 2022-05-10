@@ -1,0 +1,48 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+
+<div class="example-wrapper">
+    <button class="userButton" onclick="getDataAsync('/api/getUsers')">Get Users From API</button>
+    <table class="table-striped">
+        <thead>
+            <th scope="col">Id</th>
+            <th scope="col">email</th>
+            <th scope="col">roles</th>
+        </thead>
+        <tbody>
+        {% for data in datas %}
+            <tr>
+                <th scope="row">{{ data.id }}</th>
+                <td>{{ data.email }}</td>
+                <td>{{ data.roles[0] }}</td>
+                <td><button onclick="getDataAsync('/api/getUserAlbums/{{ data.id }}')">Get Albums</button></td>
+                <td><button onclick="getDataAsync('/api/getUserTodos/{{ data.id }}')">Get Todos</button></td>
+                <td><button onclick="getDataAsync('/api/getUserPosts/{{ data.id }}')">Get Posts</button></td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}
+{% block javascripts %}
+    <script>
+        function getDataAsync(url) {
+            let httpRequest = new XMLHttpRequest();
+
+            if (!httpRequest) {
+                alert('Abandon :( Error with XMLHTTP instance');
+                return false;
+            }
+            httpRequest.onreadystatechange = alertContents;
+            httpRequest.open('GET', url);
+            httpRequest.send();
+            function alertContents() {
+                if (httpRequest.readyState === XMLHttpRequest.DONE) {
+                    alert(httpRequest.responseText);
+                }
+            }
+        }
+    </script>
+{% endblock %}

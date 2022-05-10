@@ -1,0 +1,43 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+
+    <div class="example-wrapper">
+        <table class="table-striped">
+            <thead>
+            <th scope="col">Title</th>
+            <th scope="col">Body</th>
+            </thead>
+            <tbody>
+            {% for data in datas %}
+                <tr>
+                    <th scope="row">{{ data.title }}</th>
+                    <td>{{ data.body }}</td>
+                    <td><button onclick="getDataAsync('/api/getPostComments/{{ data.id }}')">Get Comments</button></td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+{% endblock %}
+{% block javascripts %}
+    <script>
+        function getDataAsync(url) {
+            let httpRequest = new XMLHttpRequest();
+
+            if (!httpRequest) {
+                alert('Abandon :( Error with XMLHTTP instance');
+                return false;
+            }
+            httpRequest.onreadystatechange = alertContents;
+            httpRequest.open('GET', url);
+            httpRequest.send();
+            function alertContents() {
+                if (httpRequest.readyState === XMLHttpRequest.DONE) {
+                    alert(httpRequest.responseText);
+                }
+            }
+        }
+    </script>
+{% endblock %}
