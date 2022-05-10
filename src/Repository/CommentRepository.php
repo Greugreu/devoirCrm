@@ -61,7 +61,7 @@ class CommentRepository extends ServiceEntityRepository
             if (empty($check)) {
                 $comment = new Comment();
                 $comment->setName($data['name']);
-                $comment->setPostId($this->postRepository->findOneBy(['id' => $data['postId']]));
+                $comment->setPostId($this->postRepository->find($data['postId']));
                 $comment->setEmail($data['email']);
                 $comment->setBody($data['body']);
 
@@ -72,16 +72,16 @@ class CommentRepository extends ServiceEntityRepository
                     return new JsonResponse($exception, Response::HTTP_INTERNAL_SERVER_ERROR);
                 }
             } else {
-                $check->setPostId($this->postRepository->findOneBy(['id' => $data['postId']]));
                 $check->setName($data['name']);
                 $check->setEmail($data['email']);
                 $check->setBody($data['body']);
+                $check->setPostId($this->postRepository->find($data['postId']));
 
                 try {
                     $this->add($check);
                     $update++;
                 } catch (\Exception $exception) {
-                    return $exception;
+                    return new JsonResponse($exception, Response::HTTP_INTERNAL_SERVER_ERROR);
                 }
             }
         }

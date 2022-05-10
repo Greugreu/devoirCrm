@@ -20,7 +20,7 @@ class ApiService implements IApiService
     /**
      * @throws TransportExceptionInterface
      */
-    function getApiData(string $type, string $content , int $userId = null)
+    function getApiData(string $type, string $content = null , int $userId = null)
     {
         $root = "https://jsonplaceholder.typicode.com/";
         $call = $this->client->request(

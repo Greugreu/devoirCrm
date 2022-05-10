@@ -19,11 +19,11 @@ class Comment
     #[ORM\Column(type: 'string', length: 255)]
     private $email;
 
-    #[ORM\Column(type: 'string', length: 255)]
-    private $body;
-
     #[ORM\ManyToOne(targetEntity: Post::class, inversedBy: 'comments')]
     private $postId;
+
+    #[ORM\Column(type: 'text', nullable: true)]
+    private $body;
 
     public function getId(): ?int
     {
@@ -53,31 +53,7 @@ class Comment
 
         return $this;
     }
-
-    public function getBody(): ?string
-    {
-        return $this->body;
-    }
-
-    public function setBody(string $body): self
-    {
-        $this->body = $body;
-
-        return $this;
-    }
-
-    public function getUserId(): ?User
-    {
-        return $this->UserId;
-    }
-
-    public function setUserId(?User $UserId): self
-    {
-        $this->UserId = $UserId;
-
-        return $this;
-    }
-
+    
     public function getPostId(): ?post
     {
         return $this->postId;
@@ -86,6 +62,18 @@ class Comment
     public function setPostId(?post $postId): self
     {
         $this->postId = $postId;
+
+        return $this;
+    }
+
+    public function getBody(): ?string
+    {
+        return $this->body;
+    }
+
+    public function setBody(?string $body): self
+    {
+        $this->body = $body;
 
         return $this;
     }

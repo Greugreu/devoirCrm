@@ -98,3 +98,8 @@ h2 {
 .userButton{
     margin-bottom: 1em;
 }
+
+td {
+    margin: 2px 0 2px 0;
+    border-bottom: 1px solid #5B5B5B;
+}
