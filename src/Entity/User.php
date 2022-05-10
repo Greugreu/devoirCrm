@@ -30,9 +30,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: 'userId', targetEntity: Album::class)]
     private $albums;
 
-    #[ORM\OneToMany(mappedBy: 'UserId', targetEntity: Comment::class)]
-    private $comments;
-
     #[ORM\OneToMany(mappedBy: 'UserId', targetEntity: Photo::class)]
     private $photos;
 
@@ -54,7 +51,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function __construct()
     {
         $this->albums = new ArrayCollection();
-        $this->comments = new ArrayCollection();
         $this->photos = new ArrayCollection();
         $this->posts = new ArrayCollection();
         $this->todos = new ArrayCollection();
@@ -154,36 +150,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             // set the owning side to null (unless already changed)
             if ($album->getUserId() === $this) {
                 $album->setUserId(null);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Comment>
-     */
-    public function getComments(): Collection
-    {
-        return $this->comments;
-    }
-
-    public function addComment(Comment $comment): self
-    {
-        if (!$this->comments->contains($comment)) {
-            $this->comments[] = $comment;
-            $comment->setUserId($this);
-        }
-
-        return $this;
-    }
-
-    public function removeComment(Comment $comment): self
-    {
-        if ($this->comments->removeElement($comment)) {
-            // set the owning side to null (unless already changed)
-            if ($comment->getUserId() === $this) {
-                $comment->setUserId(null);
             }
         }
 

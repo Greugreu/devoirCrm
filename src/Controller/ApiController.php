@@ -13,6 +13,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Validator\Constraints\Json;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
 class ApiController extends AbstractController
@@ -42,7 +43,7 @@ class ApiController extends AbstractController
     #[Route('/api/getUsers', name:'getApiUsers', methods:'GET')]
     public function getApiUsers(): JsonResponse
     {
-        $datas = $this->apiService->getApiData('users','');
+        $datas = $this->apiService->getApiData('users');
 
         if (!empty($datas))
         {
@@ -50,6 +51,19 @@ class ApiController extends AbstractController
         }
 
         return new JsonResponse('Bad Request' , Response::HTTP_BAD_REQUEST);
+    }
+
+    #[Route('/api/getAllAlbums', name:'getAllAlbums', methods: 'GET')]
+    public function getAllAlbums()
+    {
+        $datas = $this->apiService->getApiData('albums');
+
+        if (!empty($datas))
+        {
+            return $this->albumRepository->addNewAlbum($datas);
+        }
+
+        return new JsonResponse('Bad Request', Response::HTTP_BAD_REQUEST);
     }
 
     /**
@@ -65,6 +79,19 @@ class ApiController extends AbstractController
             return $this->albumRepository->addNewAlbum($datas);
         }
         return new JsonResponse('User does not exist', Response::HTTP_NOT_FOUND);
+    }
+
+    #[Route('/api/getAllTodos', name:'getAllTodos', methods: 'GET')]
+    public function getAllTodos()
+    {
+        $datas = $this->apiService->getApiData('todos');
+
+        if (!empty($datas))
+        {
+            return $this->todoRepository->addNewTodos($datas);
+        }
+
+        return new JsonResponse('Bad Request', Response::HTTP_BAD_REQUEST);
     }
 
     /**
@@ -83,6 +110,19 @@ class ApiController extends AbstractController
         return new JsonResponse('User does not exist', Response::HTTP_NOT_FOUND);
     }
 
+    #[Route('/api/getAllPosts', name:'getAllPosts', methods: 'GET')]
+    public function getAllPosts()
+    {
+        $datas = $this->apiService->getApiData('posts');
+
+        if (!empty($datas))
+        {
+            return $this->postRepository->addNewPosts($datas);
+        }
+
+        return new JsonResponse('Bad Request', Response::HTTP_BAD_REQUEST);
+    }
+
     /**
      * @throws TransportExceptionInterface
      */
@@ -98,7 +138,19 @@ class ApiController extends AbstractController
         return new JsonResponse('User does not exist', Response::HTTP_NOT_FOUND);
     }
 
-    /**
+    #[Route('/api/getAllComments', name:'getAllComments', methods: 'GET')]
+    public function getAllComments()
+    {
+        $datas = $this->apiService->getApiData('comments');
+
+        if (!empty($datas)) {
+            return $this->commentRepository->addNewComments($datas);
+        }
+
+        return new JsonResponse('Bad Request', Response::HTTP_BAD_REQUEST);
+    }
+
+        /**
      * @throws TransportExceptionInterface
      */
     #[Route('/api/getPostComments/{id}', name:'getPostComments')]
@@ -112,6 +164,18 @@ class ApiController extends AbstractController
         }
 
         return new JsonResponse('Post does not exist', Response::HTTP_NOT_FOUND);
+    }
+
+    #[Route('/api/getAllPhotos', name:'getAllPhotos', methods: 'GET')]
+    public function getAllPhotos()
+    {
+        $datas = $this->apiService->getApiData('photos');
+
+        if (!empty($datas)) {
+            return $this->photoRepository->addNewPhotos($datas);
+        }
+
+        return new JsonResponse('Bad Request', Response::HTTP_BAD_REQUEST);
     }
 
     #[Route('/api/getAlbumsPhotos/{id}', name:'getAlbumsPhotos')]
