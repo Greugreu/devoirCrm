@@ -327,4 +327,47 @@ class ApiController extends AbstractController
 
         return new JsonResponse('Post does not exist', Response::HTTP_NOT_FOUND);
     }
+
+    #[Route('/api/getAlbumsPhotos/{id}', name:'getAlbumsPhotos')]
+    public function getAlbumsPhotos(int $id)
+    {
+        $datas = $this->apiService->getApiData('albums', 'photos', $id);
+        $add = 0;
+        $update = 0;
+
+        if (!empty($datas)) {
+            foreach ($datas as $data) {
+                $check = $this->photoRepository->findOneBy(['title' => $data['title']]);
+                if (empty($check)) {
+                    $photo = new Photo();
+                    $photo->setAlbumId($this->albumRepository->find($data['albumId']));
+                    $photo->setThumbnailUrl($data['thumbnailUrl']);
+                    $photo->setTitle($data['title']);
+                    $photo->setUrl($data['url']);
+
+                    try {
+                        $this->photoRepository->add($photo);
+                        $add++;
+                    } catch (\Exception $exception) {
+                        return new JsonResponse($exception, Response::HTTP_INTERNAL_SERVER_ERROR);
+                    }
+                } else {
+                    $check->setUrl($data['url']);
+                    $check->setTitle($data['title']);
+                    $check->setThumbnailUrl('thumbnailUrl');
+
+                    try {
+                        $this->photoRepository->add($check);
+                        $update++;
+                    } catch (\Exception $exception) {
+                        return new JsonResponse($exception, Response::HTTP_INTERNAL_SERVER_ERROR);
+                    }
+                }
+            }
+            return new JsonResponse('Ok: ' . $add . ' added -- ' . $update . ' updated' , Response::HTTP_OK);
+        }
+        return new JsonResponse('Post does not exist', Response::HTTP_NOT_FOUND);
+    }
+
+
 }

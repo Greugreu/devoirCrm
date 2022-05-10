@@ -13,10 +13,31 @@
                 <tr>
                     <th scope="row">{{ data.id }}</th>
                     <td>{{ data.title }}</td>
+                    <td><button onclick="getDataAsync('/api/getAlbumsPhotos/{{ data.id }}')">Get Photos</button></td>
                 </tr>
             {% endfor %}
             </tbody>
         </table>
     </div>
 
+{% endblock %}
+{% block javascripts %}
+    <script>
+        function getDataAsync(url) {
+            let httpRequest = new XMLHttpRequest();
+
+            if (!httpRequest) {
+                alert('Abandon :( Error with XMLHTTP instance');
+                return false;
+            }
+            httpRequest.onreadystatechange = alertContents;
+            httpRequest.open('GET', url);
+            httpRequest.send();
+            function alertContents() {
+                if (httpRequest.readyState === XMLHttpRequest.DONE) {
+                    alert(httpRequest.responseText);
+                }
+            }
+        }
+    </script>
 {% endblock %}
