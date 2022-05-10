@@ -2,12 +2,6 @@
 
 namespace App\Controller;
 
-use App\Entity\Album;
-use App\Entity\Comment;
-use App\Entity\Photo;
-use App\Entity\Post;
-use App\Entity\Todo;
-use App\Entity\User;
 use App\Repository\AlbumRepository;
 use App\Repository\CommentRepository;
 use App\Repository\PhotoRepository;
@@ -18,7 +12,6 @@ use App\services\ApiService\ApiService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
@@ -131,6 +124,5 @@ class ApiController extends AbstractController
         }
         return new JsonResponse('Album does not exist', Response::HTTP_NOT_FOUND);
     }
-
 
 }
