@@ -7,6 +7,8 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * @extends ServiceEntityRepository<Album>
@@ -18,9 +20,12 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class AlbumRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerRegistry $registry)
+    private UserRepository $userRepository;
+
+    public function __construct(ManagerRegistry $registry, UserRepository $userRepository)
     {
         parent::__construct($registry, Album::class);
+        $this->userRepository = $userRepository;
     }
 
     /**
@@ -45,6 +50,40 @@ class AlbumRepository extends ServiceEntityRepository
         if ($flush) {
             $this->_em->flush();
         }
+    }
+
+    public function addNewAlbum($datas)
+    {
+        $add = 0;
+        $update = 0;
+
+        foreach ($datas as $data)
+        {
+            $check = $this->findOneBy(['title' => $data['title']]);
+            if (empty($check)){
+                $album = new Album();
+                $album->setUserId($this->userRepository->findOneBy(['id' => $data['userId']]));
+                $album->setTitle($data['title']);
+                try {
+                    $this->add($album, true);
+                    $add++;
+                } catch (\Exception $exception) {
+                    return new JsonResponse($exception, Response::HTTP_INTERNAL_SERVER_ERROR);
+                }
+            } else {
+                $check->setUserId($this->userRepository->findOneBy(['id' => $data['userId']]));
+                $check->setTitle($data['title']);
+                try {
+                    $this->add($check);
+                    $update++;
+                } catch (\Exception $exception) {
+                    return new JsonResponse($exception, Response::HTTP_INTERNAL_SERVER_ERROR);
+                }
+            }
+        }
+
+        return new JsonResponse('Ok: ' . $add . ' added -- ' . $update . ' updated' , Response::HTTP_OK);
+
     }
 
     // /**

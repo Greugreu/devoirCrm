@@ -7,6 +7,8 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * @extends ServiceEntityRepository<Photo>
@@ -18,9 +20,12 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class PhotoRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerRegistry $registry)
+    private AlbumRepository $albumRepository;
+
+    public function __construct(ManagerRegistry $registry, AlbumRepository $albumRepository)
     {
         parent::__construct($registry, Photo::class);
+        $this->albumRepository = $albumRepository;
     }
 
     /**
@@ -45,6 +50,42 @@ class PhotoRepository extends ServiceEntityRepository
         if ($flush) {
             $this->_em->flush();
         }
+    }
+
+    public function addNewPhotos($datas)
+    {
+        $add = 0;
+        $update = 0;
+        foreach ($datas as $data) {
+            $check = $this->findOneBy(['title' => $data['title']]);
+            if (empty($check)) {
+                $photo = new Photo();
+                $photo->setAlbumId($this->albumRepository->find($data['albumId']));
+                $photo->setThumbnailUrl($data['thumbnailUrl']);
+                $photo->setTitle($data['title']);
+                $photo->setUrl($data['url']);
+
+                try {
+                    $this->add($photo);
+                    $add++;
+                } catch (\Exception $exception) {
+                    return new JsonResponse($exception, Response::HTTP_INTERNAL_SERVER_ERROR);
+                }
+            } else {
+                $check->setUrl($data['url']);
+                $check->setTitle($data['title']);
+                $check->setThumbnailUrl('thumbnailUrl');
+
+                try {
+                    $this->add($check);
+                    $update++;
+                } catch (\Exception $exception) {
+                    return new JsonResponse($exception, Response::HTTP_INTERNAL_SERVER_ERROR);
+                }
+            }
+        }
+        return new JsonResponse('Ok: ' . $add . ' added -- ' . $update . ' updated' , Response::HTTP_OK);
+
     }
 
     // /**

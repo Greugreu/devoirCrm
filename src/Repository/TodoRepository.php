@@ -7,6 +7,8 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * @extends ServiceEntityRepository<Todo>
@@ -18,9 +20,12 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class TodoRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerRegistry $registry)
+    private UserRepository $userRepository;
+
+    public function __construct(ManagerRegistry $registry, UserRepository $userRepository)
     {
         parent::__construct($registry, Todo::class);
+        $this->userRepository = $userRepository;
     }
 
     /**
@@ -45,6 +50,44 @@ class TodoRepository extends ServiceEntityRepository
         if ($flush) {
             $this->_em->flush();
         }
+    }
+
+    public function addNewTodos($datas)
+    {
+        $add = 0;
+        $update = 0;
+
+        foreach ($datas as $data)
+        {
+            $check = $this->findOneBy(['title' => $data['title']]);
+            if (empty($check)){
+                $todo = new Todo();
+                $todo->setTitle($data['title']);
+                $todo->setUserId($this->userRepository->findOneBy(['id' => $data['userId']]));
+                $todo->setCompleted($data['completed']);
+
+                try {
+                    $this->add($todo);
+                    $add++;
+                } catch (\Exception $exception) {
+                    return new JsonResponse($exception, Response::HTTP_INTERNAL_SERVER_ERROR);
+                }
+            } else {
+                $check->setTitle($data['title']);
+                $check->setUserId($this->userRepository->findOneBy(['id' => $data['userId']]));
+                $check->setCompleted($data['completed']);
+
+                try {
+                    $this->add($check);
+                    $update++;
+                } catch (\Exception $exception) {
+                    return $exception;
+                }
+            }
+        }
+
+        return new JsonResponse('Ok: ' . $add . ' added -- ' . $update . ' updated' , Response::HTTP_OK);
+
     }
 
     // /**

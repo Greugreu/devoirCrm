@@ -7,6 +7,8 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * @extends ServiceEntityRepository<Comment>
@@ -18,9 +20,12 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class CommentRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerRegistry $registry)
+    private $postRepository;
+
+    public function __construct(ManagerRegistry $registry, PostRepository $postRepository)
     {
         parent::__construct($registry, Comment::class);
+        $this->postRepository = $postRepository;
     }
 
     /**
@@ -45,6 +50,43 @@ class CommentRepository extends ServiceEntityRepository
         if ($flush) {
             $this->_em->flush();
         }
+    }
+
+    public function addNewComments($datas)
+    {
+        $add = 0;
+        $update = 0;
+        foreach ($datas as $data) {
+            $check = $this->findOneBy(['name' => $data['name']]);
+            if (empty($check)) {
+                $comment = new Comment();
+                $comment->setName($data['name']);
+                $comment->setPostId($this->postRepository->findOneBy(['id' => $data['postId']]));
+                $comment->setEmail($data['email']);
+                $comment->setBody($data['body']);
+
+                try {
+                    $this->add($comment);
+                    $add++;
+                } catch (\Exception $exception) {
+                    return new JsonResponse($exception, Response::HTTP_INTERNAL_SERVER_ERROR);
+                }
+            } else {
+                $check->setPostId($this->postRepository->findOneBy(['id' => $data['postId']]));
+                $check->setName($data['name']);
+                $check->setEmail($data['email']);
+                $check->setBody($data['body']);
+
+                try {
+                    $this->add($check);
+                    $update++;
+                } catch (\Exception $exception) {
+                    return $exception;
+                }
+            }
+        }
+        return new JsonResponse('Ok: ' . $add . ' added -- ' . $update . ' updated' , Response::HTTP_OK);
+
     }
 
     // /**
