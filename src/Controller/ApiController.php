@@ -40,7 +40,7 @@ class ApiController extends AbstractController
     }
 
     #[Route('/api/getUsers', name:'getApiUsers', methods:'GET')]
-    public function getApiUsers()
+    public function getApiUsers(): JsonResponse
     {
         $datas = $this->apiService->getApiData('users','');
 
@@ -71,7 +71,7 @@ class ApiController extends AbstractController
      * @throws TransportExceptionInterface
      */
     #[Route('/api/getUserTodos/{id}', name:'getUserTodos', methods: 'GET')]
-    public function getUserTodos(int $id)
+    public function getUserTodos(int $id): JsonResponse|\Exception
     {
         $datas = $this->apiService->getApiData('users', 'todos', $id);
 
@@ -87,7 +87,7 @@ class ApiController extends AbstractController
      * @throws TransportExceptionInterface
      */
     #[Route('/api/getUserPosts/{id}', name:'getUserPosts', methods: 'GET')]
-    public function getUserPosts(int $id)
+    public function getUserPosts(int $id): JsonResponse|\Exception
     {
         $datas = $this->apiService->getApiData('users', 'posts', $id);
 
@@ -102,7 +102,7 @@ class ApiController extends AbstractController
      * @throws TransportExceptionInterface
      */
     #[Route('/api/getPostComments/{id}', name:'getPostComments')]
-    public function getPostComments(int $id)
+    public function getPostComments(int $id): JsonResponse|\Exception
     {
         $datas = $this->apiService->getApiData('posts', 'comments', $id);
 
@@ -115,7 +115,7 @@ class ApiController extends AbstractController
     }
 
     #[Route('/api/getAlbumsPhotos/{id}', name:'getAlbumsPhotos')]
-    public function getAlbumsPhotos(int $id)
+    public function getAlbumsPhotos(int $id): JsonResponse
     {
         $datas = $this->apiService->getApiData('albums', 'photos', $id);
 
